@@ -63,17 +63,18 @@
 // }
 
 // export default CytoscapeLayout;
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import cytoscape from "cytoscape";
 import panzoom from "cytoscape-panzoom";
 import "cytoscape-panzoom/cytoscape.js-panzoom.css";
 import $ from "jquery";
 import { useSelectedNode } from "../../contexts/SelectedNode";
+import { useLayoutContext } from "../../contexts/LayoutsContext";
 panzoom(cytoscape, $);
 
 const CytoscapeLayout = ({ elements }) => {
-  const cyRef = useRef(null);
   const { setSelectedNode } = useSelectedNode();
+  const { cyRef } = useLayoutContext();
 
   useEffect(() => {
     if (!cyRef.current) return;
@@ -106,6 +107,8 @@ const CytoscapeLayout = ({ elements }) => {
     });
     cy.panzoom();
 
+    cyRef.current.cy = cy;
+
     cy.on("tap", "node", (event) => {
       const node = event.target;
       const nodeData = node.data();
@@ -121,7 +124,7 @@ const CytoscapeLayout = ({ elements }) => {
     });
 
     return () => cy.destroy(); // Cleanup on unmount
-  }, [elements, setSelectedNode]);
+  }, [elements, setSelectedNode, cyRef]);
 
   return <div ref={cyRef} style={{ width: "100%", height: "550px" }} />;
 };
