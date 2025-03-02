@@ -5,6 +5,7 @@ import LayoutChange from "../features/SidebarDetails/LayoutChange";
 import SearchNodesByID from "../features/SidebarDetails/SearchNodesByID";
 import GraphDetails from "../features/SidebarDetails/GraphDetails";
 import Button from "./Button";
+import DownloadButton from "../features/SidebarDetails/DownloadButton";
 
 const StyledSidebar = styled.aside`
   background-color: var(--color-grey-0);
@@ -32,9 +33,7 @@ function Sidebar({ layouts }) {
       <LayoutChange layouts={layouts} />
       <SearchNodesByID />
       <GraphDetails />
-      <Button size="medium" variation="primary">
-        Download as PNG
-      </Button>
+      <DownloadButton />
     </StyledSidebar>
   );
 }
