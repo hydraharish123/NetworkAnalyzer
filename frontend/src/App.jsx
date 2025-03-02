@@ -5,6 +5,7 @@ import FileUpload from "./pages/FileUpload";
 import { SelectedNodeProvider } from "./contexts/SelectedNode";
 import LayoutProvider from "./contexts/LayoutsContext";
 import { Toaster } from "react-hot-toast";
+
 function App() {
   return (
     <LayoutProvider>

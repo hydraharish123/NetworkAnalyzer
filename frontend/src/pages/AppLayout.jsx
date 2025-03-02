@@ -2,6 +2,8 @@ import styled from "styled-components";
 import Header from "../ui/Header";
 import Sidebar from "../ui/Sidebar";
 import Graph from "../features/GraphNetwork/Graph";
+
+import Spinner from "../ui/Spinner";
 const StyledAppLayout = styled.div`
   display: grid;
   grid-template-columns: 40rem 1fr;

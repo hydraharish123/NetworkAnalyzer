@@ -14,6 +14,7 @@ function Graph() {
         const res = await fetch("http://localhost:5000/fetchCytoscape");
         if (!res.ok) throw new Error("Data could not be parsed");
         const data = await res.json();
+        console.log(data);
 
         console.log(data.converted_data.elements);
 

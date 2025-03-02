@@ -6,6 +6,7 @@ import SearchNodesByID from "../features/SidebarDetails/SearchNodesByID";
 import GraphDetails from "../features/SidebarDetails/GraphDetails";
 import Button from "./Button";
 import DownloadButton from "../features/SidebarDetails/DownloadButton";
+import Centralities from "../features/SidebarDetails/Centralities";
 
 const StyledSidebar = styled.aside`
   background-color: var(--color-grey-0);
@@ -32,6 +33,7 @@ function Sidebar({ layouts }) {
       </Heading>
       <LayoutChange layouts={layouts} />
       <SearchNodesByID />
+
       <GraphDetails />
       <DownloadButton />
     </StyledSidebar>

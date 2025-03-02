@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import json
+import networkx as nx
 
 # Create a Flask instance
 app = Flask(__name__)
@@ -53,15 +54,69 @@ def fetchCytoscape():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], "file")
 
     try:
-        converted_data = convert_to_cytoscape_json(file_path)
+        cytoscape_data = convert_to_cytoscape_json(file_path)
+        G = nx.Graph()
+        for node in cytoscape_data["elements"]["nodes"]:
+            node_id = node["data"]["id"]
+            G.add_node(node_id)
+
+        # Add edges
+        for edge in cytoscape_data["elements"]["edges"]:
+            source = edge["data"]["source"]
+            target = edge["data"]["target"]
+            G.add_edge(source, target)
+
+        degree_centrality = nx.degree_centrality(G)
+        closeness_centrality = nx.closeness_centrality(G)
+        betweenness_centrality = nx.betweenness_centrality(G)
+        eigenvector_centrality = nx.eigenvector_centrality(G)
+        pagerank_centrality = nx.pagerank(G)
+        clustering_coeff = nx.clustering(G)
         return jsonify({
             'message': 'File uploaded and parsed successfully',
-            'converted_data': converted_data
+            'converted_data': cytoscape_data,
+            'degree' : degree_centrality, 
+            'closeness': closeness_centrality, 
+            'betweenness' : betweenness_centrality, 
+            'eigenvector' : eigenvector_centrality,  
+            'pagerank': pagerank_centrality, 
+            'clustering_coeff': clustering_coeff,
+            
         }), 200
     except Exception as e:
         return jsonify({'error': f'Error processing file: {str(e)}'}), 400
 
-    return jsonify({"cytoscape" : converted_data})
+    return jsonify({"cytoscape" : cytoscape_data})
+
+
+@app.route("/get-centralitites" , methods=['GET', 'POST'])
+def centralitites():
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], "file")
+
+    try:
+        cytoscape_data = convert_to_cytoscape_json(file_path)
+        G = nx.Graph()
+        for node in cytoscape_data["elements"]["nodes"]:
+            node_id = node["data"]["id"]
+            G.add_node(node_id)
+
+        # Add edges
+        for edge in cytoscape_data["elements"]["edges"]:
+            source = edge["data"]["source"]
+            target = edge["data"]["target"]
+            G.add_edge(source, target)
+
+        degree_centrality = nx.degree_centrality(G)
+        closeness_centrality = nx.closeness_centrality(G)
+        betweenness_centrality = nx.betweenness_centrality(G)
+        eigenvector_centrality = nx.eigenvector_centrality(G)
+        pagerank_centrality = nx.pagerank(G)
+        clustering_coeff = nx.clustering(G)
+
+    except Exception as e:
+        return jsonify({'error': f'Error processing file: {str(e)}'}), 400
+
+    return jsonify({'degree' : degree_centrality, 'closeness': closeness_centrality, 'betweenness' : betweenness_centrality, 'eigenvector' : eigenvector_centrality,  'pagerank': pagerank_centrality, 'clustering_coeff': clustering_coeff})
 
 
 # ---------------------- UTILITY FUNCTIONS ----------------------
