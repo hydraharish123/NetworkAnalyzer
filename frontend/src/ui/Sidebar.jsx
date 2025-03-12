@@ -16,7 +16,7 @@ const StyledSidebar = styled.aside`
   grid-row: 1/-1;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
   justify-content: center;
 `;
 
@@ -33,7 +33,7 @@ function Sidebar({ layouts }) {
       </Heading>
       <LayoutChange layouts={layouts} />
       <SearchNodesByID />
-
+      <Centralities />
       <GraphDetails />
       <DownloadButton />
     </StyledSidebar>

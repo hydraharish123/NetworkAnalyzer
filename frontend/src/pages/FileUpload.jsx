@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Heading from "../ui/Heading";
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
+import { useContext } from "react";
+import { centralitiesContext } from "../contexts/CentralitiesContext";
 
 const Container = styled.div`
   display: flex;
@@ -51,6 +53,7 @@ const FileUpload = () => {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
+  const { setFileUploading } = useContext(centralitiesContext);
 
   const handleFileChange = (e) => {
     console.log(e);
@@ -73,6 +76,7 @@ const FileUpload = () => {
     formData.append("extension", fileName);
 
     try {
+      setFileUploading(true);
       const res = await fetch("http://localhost:5000/upload", {
         method: "POST",
 
@@ -84,6 +88,8 @@ const FileUpload = () => {
       navigate("/main");
     } catch (err) {
       console.error(err.message);
+    } finally {
+      setFileUploading(false);
     }
   };
 

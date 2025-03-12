@@ -1,8 +1,12 @@
 import Button from "../../ui/Button";
 import Heading from "../../ui/Heading";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Spinner from "../../ui/Spinner";
-import { useEffect, useState } from "react";
+import { useContext, useState, Fragment } from "react";
+import { centralitiesContext } from "../../contexts/CentralitiesContext";
+import { Dialog, Transition } from "@headlessui/react";
+import styles from "./Centralities.module.css";
+import { useEffect } from "react";
 
 const StyledCentrality = styled.div`
   text-align: center;
@@ -16,43 +20,83 @@ const CentralityList = styled.div`
 `;
 
 function Centralities() {
-  const [centrality, setCentrality] = useState(null);
-  const [isLoadingCentrality, setIsLoadingCentrality] = useState(false);
+  const { centralities, loadingCentrality } = useContext(centralitiesContext);
   const [selectedCentrality, setSelectedCentrality] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  useEffect(function () {
-    async function fetchCentrality() {
-      try {
-        setIsLoadingCentrality(true);
-        const res = await fetch("http://localhost:5000/get-centralitites");
-        if (!res.ok) throw new Error("Error in fetching Centralities");
-        const data = await res.json();
-        setCentrality(data); // object of centralities
-      } catch (err) {
-        console.error(err.message);
-      } finally {
-        setIsLoadingCentrality(false);
-      }
+  useEffect(() => {
+    if (!open) {
+      setSelectedCentrality(null);
     }
+  }, [open]);
 
-    fetchCentrality();
-  }, []);
-
-  if (isLoadingCentrality) return <Spinner />;
+  // ✅ Fix: Show Spinner instead of returning nothing
+  if (loadingCentrality) return <Spinner />;
 
   return (
     <StyledCentrality>
       <Heading as="h3">Centrality Measures</Heading>
 
       <CentralityList>
-        {!isLoadingCentrality
-          ? Object.entries(centrality).map(([key, value], ind) => (
-              <Button key={ind} size="small">
-                {key}
-              </Button>
-            ))
-          : null}
+        {Object.entries(centralities).map(([key]) => (
+          <Button
+            size="small"
+            key={key}
+            onClick={() => {
+              setSelectedCentrality(key);
+              setOpen(true);
+            }}
+            variation={selectedCentrality === key ? "danger" : "primary"}
+          >
+            {key}
+          </Button>
+        ))}
       </CentralityList>
+
+      {/* ✅ Fix: Wrap Dialog in Transition for animations */}
+      <Transition appear show={open} as={Fragment}>
+        <Dialog
+          as="div"
+          className={styles.modalBackdrop}
+          onClose={() => {
+            setSelectedCentrality(null);
+            setOpen(false);
+          }}
+        >
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black bg-opacity-30" />
+
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className={styles.modalContent}>
+              <div className={styles.header}>
+                <button
+                  className={styles.closeButton}
+                  onClick={() => setOpen(false)}
+                >
+                  ✖
+                </button>
+                <Heading as="h2">{selectedCentrality} Centrality</Heading>
+              </div>
+
+              {/* ✅ Fix: Safeguard `centralities[selectedCentrality]` */}
+              <div>
+                {selectedCentrality && centralities[selectedCentrality] ? (
+                  Object.entries(centralities[selectedCentrality]).map(
+                    ([key, value]) => (
+                      <p key={key}>
+                        <strong>{key}</strong> : {value}
+                      </p>
+                    )
+                  )
+                ) : (
+                  <p>No data available</p>
+                )}
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      </Transition>
     </StyledCentrality>
   );
 }
