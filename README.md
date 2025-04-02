@@ -2,7 +2,7 @@
 
   
 
-  <h1>Network Analyser Notes</h1>
+  <h1>Network Analyser</h1>
 
   <h3>
     <a href="#">
